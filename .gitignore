@@ -5,6 +5,9 @@
 # python compiled files
 *.pyc
 
+# jupyter notebook checkpoints
+.ipynb_checkpoints/
+
 # all output files
 #output/
 figures/
