@@ -5,5 +5,6 @@ Get dN/dz [dimensionless], dN/dzdOmega [galaxies / arcmin2], dN/dV [galaxies / c
 These may be out of date, use at your own risk!
 
 Clone and run: ```python driver_dndz.py```
+or just look at ```driver_dndz.ipynb```
 
 Hope you find this code useful! Do not hesitate to contact me with any questions: eschaan@lbl.gov
