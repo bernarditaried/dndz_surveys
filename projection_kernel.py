@@ -868,7 +868,7 @@ class WeightTracer(Projection):
       if logy:
          ax.set_yscale('log', nonposy='clip')
       ax.set_xlabel(r'$z$')
-      ax.set_ylabel(r'$dN/dV$ [(Mpc/h)$^{-2}$]')
+      ax.set_ylabel(r'$dN/dV$ [(Mpc/h)$^{-3}$]')
 
 
       # plot dN / dz [dimless], assuming full sky
@@ -1184,7 +1184,7 @@ class WeightTracerLSSTSourcesDESCSRDV1(WeightTracer):
 class WeightTracerDESIBGS(WeightTracer):
    """Projected number density of DESI BGS,
    dn/dz from Rongpu Zhou Feb 19 2020.
-   Bias is wrong.
+   Bias b(z) = 1.34 / D(z) from DESI FDR arxiv:1611.00036v2, section 2.4.2
    BGS: expect 2.5e13 Msun halos, from DESI Final Design Report, fig 3.4
    """
 
@@ -1217,7 +1217,7 @@ class WeightTracerDESIBGS(WeightTracer):
       self.dndz = interp1d(zMean, nGal, kind='linear', bounds_error=False, fill_value=0.)
 
       # tracer bias
-      self.b = lambda z: 2.
+      self.b = lambda z: 1.34 / U.bg.scale_independent_growth_factor(z)
 
       super(WeightTracerDESIBGS, self).__init__(U, name=name)
 
@@ -1227,7 +1227,7 @@ class WeightTracerDESIBGS(WeightTracer):
 class WeightTracerDESILRG(WeightTracer):
    """Projected number density of DESI LRG,
    dn/dz from Rongpu Zhou Feb 19 2020.
-   Bias is wrong.
+   Bias b(z) = 1.7 / D(z) from DESI FDR arxiv:1611.00036v2, section 2.4.2
    LRG: expect 2.e13 Msun halos from CMASS galaxies
    """
 
@@ -1260,7 +1260,7 @@ class WeightTracerDESILRG(WeightTracer):
       self.dndz = interp1d(zMean, nGal, kind='linear', bounds_error=False, fill_value=0.)
 
       # tracer bias
-      self.b = lambda z: 2.
+      self.b = lambda z: 1.7 / U.bg.scale_independent_growth_factor(z)
 
       super(WeightTracerDESILRG, self).__init__(U, name=name)
 
@@ -1270,7 +1270,7 @@ class WeightTracerDESILRG(WeightTracer):
 class WeightTracerDESIELG(WeightTracer):
    """Projected number density of DESI ELG,
    dn/dz from Rongpu Zhou Feb 19 2020.
-   Bias is wrong.
+   Bias b(z) = 0.84 / D(z) from DESI FDR arxiv:1611.00036v2, section 2.4.2
    ELG: expect 2.e11 Msun halos; DESI Cosmo Sim Req Doc mentions 1.e11Msun as minimum mass
    """
 
@@ -1303,7 +1303,7 @@ class WeightTracerDESIELG(WeightTracer):
       self.dndz = interp1d(zMean, nGal, kind='linear', bounds_error=False, fill_value=0.)
 
       # tracer bias
-      self.b = lambda z: 2.
+      self.b = lambda z: 0.84 / U.bg.scale_independent_growth_factor(z)
 
       super(WeightTracerDESIELG, self).__init__(U, name=name)
 
@@ -1312,7 +1312,7 @@ class WeightTracerDESIELG(WeightTracer):
 class WeightTracerDESIQSO(WeightTracer):
    """Projected number density of DESI QSO,
    dn/dz from Rongpu Zhou Feb 19 2020.
-   Bias is wrong.
+   Bias b(z) = 1.2 / D(z) from DESI FDR arxiv:1611.00036v2, section 2.4.2
    QSO: guess 5.e12 Msun halos.
    """
 
@@ -1345,7 +1345,7 @@ class WeightTracerDESIQSO(WeightTracer):
       self.dndz = interp1d(zMean, nGal, kind='linear', bounds_error=False, fill_value=0.)
 
       # tracer bias
-      self.b = lambda z: 2.
+      self.b = lambda z: 1.2 / U.bg.scale_independent_growth_factor(z)
 
       super(WeightTracerDESIQSO, self).__init__(U, name=name)
 
