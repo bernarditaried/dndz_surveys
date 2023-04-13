@@ -1,4 +1,5 @@
 from headers import *
+import sharedmem
 ##################################################################################
 
 class Projection(object):
@@ -16,12 +17,12 @@ class Projection(object):
       A = np.linspace(self.aMin, self.aMax, nA)
       F = np.array(map(self.fForInterp, A))
 
-#      print "nProc=", self.nProc
-#      tStart = time()
-#      with sharedmem.MapReduce(np=self.nProc) as pool:
-#         F = np.array(pool.map(self.fForInterp, A))
-#      tStop = time()
-#      print "para took", tStop-tStart
+      print("nProc=", self.nProc)
+      tStart = time()
+      with sharedmem.MapReduce(np=self.nProc) as pool:
+         F = np.array(pool.map(self.fForInterp, A))
+      tStop = time()
+      print("para took", tStop-tStart)
 
       self.f = interp1d(A, F, kind='linear', bounds_error=False, fill_value=0.)
 
@@ -836,7 +837,7 @@ class WeightTracer(Projection):
       #
       for w in wArr:
          Z = np.linspace(1./w.aMax-1., 1./w.aMin-1., 501)
-         Dndz = np.array(map(w.dndz, Z))
+         Dndz = np.array(list(map(w.dndz, Z)))
          # normalize such that int dz dn/dz = ngal in arcmin^-2
          Dndz /= (180.*60. / np.pi)**2
          # plot it
@@ -844,9 +845,9 @@ class WeightTracer(Projection):
       #
       ax.legend(loc=1, fontsize='x-small', labelspacing=0.1)
       if logx:
-         ax.set_xscale('log', nonposx='clip')
+         ax.set_xscale('log', nonpositive='clip')
       if logy:
-         ax.set_yscale('log', nonposy='clip')
+         ax.set_yscale('log', nonpositive='clip')
       ax.set_xlabel(r'$z$')
       ax.set_ylabel(r'$dN/dz d\Omega$ [arcmin$^{-2}$]')
 
@@ -857,16 +858,16 @@ class WeightTracer(Projection):
       #
       for w in wArr:
          Z = np.linspace(1./w.aMax-1., 1./w.aMin-1., 501)
-         Dndz = np.array(map(w.dndz, Z))  # [sr^-2]
+         Dndz = np.array(list(map(w.dndz, Z)))  # [sr^-2]
          Dndz /= self.U.bg.comoving_distance(Z)**2 * (3.e5 / self.U.hubble(Z))
          # plot it
          ax.plot(Z, Dndz, label=w.name)
       #
       ax.legend(loc=1, fontsize='x-small', labelspacing=0.1)
       if logx:
-         ax.set_xscale('log', nonposx='clip')
+         ax.set_xscale('log', nonpositive='clip')
       if logy:
-         ax.set_yscale('log', nonposy='clip')
+         ax.set_yscale('log', nonpositive='clip')
       ax.set_xlabel(r'$z$')
       ax.set_ylabel(r'$dN/dV$ [(Mpc/h)$^{-3}$]')
 
@@ -877,7 +878,7 @@ class WeightTracer(Projection):
       #
       for w in wArr:
          Z = np.linspace(1./w.aMax-1., 1./w.aMin-1., 501)
-         Dndz = np.array(map(w.dndz, Z))
+         Dndz = np.array(list(map(w.dndz, Z)))
          # normalize such that int dz dn/dz = ngal in arcmin^-2
          Dndz /= (180.*60. / np.pi)**2
          # convert to dN/dz, assumng full sky is covered
@@ -887,9 +888,9 @@ class WeightTracer(Projection):
       #
       ax.legend(loc=1, fontsize='x-small', labelspacing=0.1)
       if logx:
-         ax.set_xscale('log', nonposx='clip')
+         ax.set_xscale('log', nonpositive='clip')
       if logy:
-         ax.set_yscale('log', nonposy='clip')
+         ax.set_yscale('log', nonpositive='clip')
       ax.set_xlabel(r'$z$')
       ax.set_ylabel(r'$dN/dz$')
 
@@ -1135,8 +1136,10 @@ class WeightTracerLSSTSourcesDESCSRDV1(WeightTracer):
       
 
       # dn/dz, non-normalized
-      self.z0 = 0.11
-      self.alpha = 0.68
+      #self.z0 = 0.11    
+      self.z0 = 0.13
+      #self.alpha = 0.68
+      self.alpha = 0.78
       f = lambda z: z**2. * np.exp(-(z/self.z0)**self.alpha)
       # normalization
       norm = integrate.quad(f, self.zMin, self.zMax, epsabs=0., epsrel=1.e-2)[0]
@@ -1486,8 +1489,8 @@ class WeightCIBPenin12(Projection):
 
       # convert flux number counts to gal/Jy/(Mpc/h)^3
       # dNdSnudV in gal/Jy/(Mpc/h)^3
-      Chi = np.array(map(lambda a: self.U.bg.comoving_distance(1./a-1.), self.A))
-      Hubble = np.array(map(lambda a: self.U.hubble(1./a-1.), self.A))
+      Chi = np.array(list(map(lambda a: self.U.bg.comoving_distance(1./a-1.), self.A)))
+      Hubble = np.array(list(map(lambda a: self.U.hubble(1./a-1.), self.A)))
       dV_dzdOmega = Chi**2 * (3.e5/Hubble)
       self.dNdSnudV = self.dNdSnudzdOmega / dV_dzdOmega[:,np.newaxis]
       
