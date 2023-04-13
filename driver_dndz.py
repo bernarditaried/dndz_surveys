@@ -1,3 +1,5 @@
+from importlib import reload
+
 import universe
 reload(universe)
 from universe import *
@@ -5,6 +7,12 @@ from universe import *
 import projection_kernel
 reload(projection_kernel)
 from projection_kernel import *
+
+import latex
+import matplotlib as mpl
+mpl.rcParams.update(mpl.rcParamsDefault)
+
+from matplotlib.pyplot import figure
 
 ##################################################################################
 
